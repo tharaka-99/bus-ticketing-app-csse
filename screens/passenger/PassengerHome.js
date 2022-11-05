@@ -11,8 +11,9 @@ import { useNavigation } from "@react-navigation/native";
 
 export default function PassengerHome({ route }) {
   const { myData } = route.params;
-  const peonID = myData.uid;
+  const Pid = myData.uid;
   const navigation = useNavigation();
+
   return (
     <View>
       <View style={{ margin: 10 }}>
@@ -31,21 +32,21 @@ export default function PassengerHome({ route }) {
           <View style={{ flexDirection: "row", alignItems: "center" }}>
             <Text
               style={{
-                fontWeight: "900",
-                fontSize: 30,
-                marginLeft: 30,
+                marginTop: 5,
+                marginLeft: 10,
+                marginRight: 10,
+                fontSize: 25,
               }}
             >
-              7000.09
+              Rs.
             </Text>
             <Text
               style={{
-                marginTop: 10,
-                marginLeft: 10,
-                fontSize: 17,
+                fontWeight: "900",
+                fontSize: 30,
               }}
             >
-              LKR
+              1000
             </Text>
           </View>
           <View
@@ -63,7 +64,7 @@ export default function PassengerHome({ route }) {
                 justifyContent: "center",
               }}
               activeOpacity={2}
-              onPress={() => console.log("clicked")}
+              onPress={() => navigation.navigate("Top Up")}
               underlayColor="#0084fffa"
             >
               <Text
@@ -102,7 +103,7 @@ export default function PassengerHome({ route }) {
             borderColor: "black",
           }}
           activeOpacity={2}
-          onPress={() => navigation.navigate("Buy Tickets")}
+          onPress={() => navigation.navigate("Buy Tickets", { Pid })}
           underlayColor="#0084fffa"
         >
           <Text

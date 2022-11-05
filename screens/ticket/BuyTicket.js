@@ -4,15 +4,18 @@ import {
   View,
   TouchableOpacity,
   FlatList,
+  Alert,
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { db } from "../../Firebase/Firebase-config";
 import { collection, getDocs, doc, deleteDoc } from "firebase/firestore";
 
-export default function BuyTicket() {
+export default function BuyTicket({ route }) {
+  const { Pid } = route.params;
   const DatCollectinRef = collection(db, "Package");
   const [travelPackage, setTravelPackage] = useState("");
+  const navigation = useNavigation();
 
   useEffect(() => {
     //fetch the all data from firebase and set it to usestate, this firebase method
@@ -25,8 +28,30 @@ export default function BuyTicket() {
   }, []);
   // console.log(travelPackage);
 
+  const GetConfirmation = (item) => {
+    Alert.alert(
+      item.package_name,
+      "Package Price is " +
+        item.price +
+        " and it's Valid for " +
+        item.valid +
+        " Days, You want to buy this package please click 'Buy' button",
+      [
+        {
+          text: "Cancel",
+          onPress: () => console.log("Cancel Pressed"),
+          style: "cancel",
+        },
+        {
+          text: "Buy",
+          onPress: () => navigation.navigate("QR Code Ticket", { item, Pid }),
+        },
+      ]
+    );
+  };
+
   return (
-    <View style={{ backgroundColor: "#FFF", marginBottom: "20%" }}>
+    <View style={{ backgroundColor: "#E0E0E0", marginBottom: "20%" }}>
       <Text
         style={{
           textAlign: "center",
@@ -42,7 +67,7 @@ export default function BuyTicket() {
         renderItem={({ item }) => (
           <View
             style={{
-              backgroundColor: "#FFFDE7",
+              backgroundColor: "#FFF",
               elevation: 10,
               borderRadius: 10,
               marginVertical: 10,
@@ -66,7 +91,7 @@ export default function BuyTicket() {
 
               <View
                 style={{
-                  borderTopWidth: 1,
+                  borderTopWidth: 1.5,
                   borderColor: "#B0BEC5",
                   flexDirection: "row",
                   justifyContent: "space-between",
@@ -103,7 +128,32 @@ export default function BuyTicket() {
                   </Text>
                 </View>
               </View>
+              <View
+                style={{
+                  marginHorizontal: 5,
+                  marginVertical: 15,
+                }}
+              >
+                <Text
+                  style={{
+                    fontSize: 15,
+                    fontWeight: "bold",
+                    textDecorationLine: "underline",
+                  }}
+                >
+                  Details
+                </Text>
+                <Text
+                  style={{
+                    fontSize: 15,
+                    opacity: 0.6,
+                  }}
+                >
+                  {item.details}
+                </Text>
+              </View>
             </View>
+
             <TouchableOpacity
               style={{
                 flexDirection: "row",
@@ -112,6 +162,8 @@ export default function BuyTicket() {
                 borderBottomEndRadius: 10,
                 borderBottomLeftRadius: 10,
               }}
+              // onPress={() => navigation.navigate("QR Code Ticket", { item })}
+              onPress={() => GetConfirmation(item)}
             >
               <Text
                 style={{
@@ -120,7 +172,7 @@ export default function BuyTicket() {
                   marginVertical: 5,
                 }}
               >
-                Get it
+                Buy it
               </Text>
             </TouchableOpacity>
           </View>

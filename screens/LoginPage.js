@@ -45,10 +45,6 @@ export default function LoginPage() {
       if (user) {
         console.log("Document data id:", user.uid);
         const getDate = async (id) => {
-          await setDoc(doc(db, "RegisteredUser", auth.currentUser.uid), {
-            uid: auth.currentUser.uid,
-            phone_number: auth.currentUser.phoneNumber,
-          });
           const docRef = await getDoc(doc(db, "RegisteredUser", id));
           const myData = docRef.data();
           navigation.navigate("Passanger", { myData });
@@ -120,7 +116,12 @@ export default function LoginPage() {
         verificationId,
         verificationCode
       );
-      await signInWithCredential(auth, credential);
+      await signInWithCredential(auth, credential).then(() => {
+        setDoc(doc(db, "RegisteredUser", auth.currentUser.uid), {
+          uid: auth.currentUser.uid,
+          phone_number: auth.currentUser.phoneNumber,
+        });
+      });
       // showMessage({ text: "Phone authentication successful 👍" });
       ToastAndroid.show(
         "Phone authentication successful 👍",
