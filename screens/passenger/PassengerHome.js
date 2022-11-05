@@ -5,14 +5,34 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import TicketPage from "../ticket/TicketPage";
 import { useNavigation } from "@react-navigation/native";
+import { db } from "../../Firebase/Firebase-config";
+import {
+  collection,
+  getDocs,
+  updateDoc,
+  getDoc,
+  deleteDoc,
+  doc,
+} from "firebase/firestore";
 
 export default function PassengerHome({ route }) {
   const { myData } = route.params;
   const Pid = myData.uid;
   const navigation = useNavigation();
+  const [user, setUser] = useState(myData);
+  const [ignored, forceUpdate] = React.useReducer((x) => x + 1, 0);
+
+  useEffect(() => {
+    const getUser = async () => {
+      const docRef = await getDoc(doc(db, "RegisteredUser", Pid));
+      setUser({ ...docRef.data(), id: docRef.id });
+      forceUpdate();
+    };
+    getUser();
+  }, [ignored]);
 
   return (
     <View>
@@ -46,7 +66,7 @@ export default function PassengerHome({ route }) {
                 fontSize: 30,
               }}
             >
-              1000
+              {user.wallet}
             </Text>
           </View>
           <View
@@ -90,11 +110,12 @@ export default function PassengerHome({ route }) {
         >
           Your Tickets
         </Text>
-        <ScrollView style={{ marginVertical: 15, height: "50%" }}>
-          <TicketPage />
-        </ScrollView>
+        <View style={{ height: "53%" }}>
+          <TicketPage myData={myData} />
+        </View>
         <TouchableOpacity
           style={{
+            marginTop: 10,
             flexDirection: "row",
             backgroundColor: "#FFB200",
             borderRadius: 5,
@@ -103,7 +124,7 @@ export default function PassengerHome({ route }) {
             borderColor: "black",
           }}
           activeOpacity={2}
-          onPress={() => navigation.navigate("Buy Tickets", { Pid })}
+          onPress={() => navigation.navigate("Buy Tickets", { myData })}
           underlayColor="#0084fffa"
         >
           <Text

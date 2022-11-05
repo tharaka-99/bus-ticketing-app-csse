@@ -7,6 +7,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import PassengerHome from "./screens/passenger/PassengerHome";
 import BuyTicket from "./screens/ticket/BuyTicket";
 import TopUpPage from "./screens/passenger/TopUpPage";
+import PassengerQRCode from "./screens/ticket/PassengerQRCode";
 
 const Stack = createNativeStackNavigator();
 export default function App() {
@@ -25,6 +26,7 @@ export default function App() {
           <Stack.Screen name="Buy Tickets" component={BuyTicket} />
           <Stack.Screen name="QR Code Ticket" component={TicketQRCode} />
           <Stack.Screen name="Top Up" component={TopUpPage} />
+          <Stack.Screen name="Bus QR Pass" component={PassengerQRCode} />
         </Stack.Navigator>
       </NavigationContainer>
     </View>

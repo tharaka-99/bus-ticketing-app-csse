@@ -4,13 +4,13 @@ import "firebase/compat/auth";
 import "firebase/compat/firestore";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyADZV8n3tsUmJ5fihy20cwuhGspIwgmYtI",
-  authDomain: "csse-bus-ticketing-a0cb8.firebaseapp.com",
-  projectId: "csse-bus-ticketing-a0cb8",
-  storageBucket: "csse-bus-ticketing-a0cb8.appspot.com",
-  messagingSenderId: "1041577967116",
-  appId: "1:1041577967116:web:79cda2ccd748b1f5907829",
-  measurementId: "G-RVH7P609KP",
+  apiKey: "AIzaSyA-epGVgaQ-0gdki_uB-Dbm-qkc2pcqNo4",
+  authDomain: "uee-job-finder-project.firebaseapp.com",
+  projectId: "uee-job-finder-project",
+  storageBucket: "uee-job-finder-project.appspot.com",
+  messagingSenderId: "122421237502",
+  appId: "1:122421237502:web:0da7833527355e4e46b7af",
+  measurementId: "G-FG1JW11Z0X",
 };
 
 // Initialize Firebase

@@ -9,45 +9,76 @@ import {
 import React, { useState, useEffect } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { db } from "../../Firebase/Firebase-config";
-import { collection, getDocs, doc, deleteDoc } from "firebase/firestore";
+import {
+  collection,
+  getDocs,
+  addDoc,
+  getDoc,
+  doc,
+  deleteDoc,
+} from "firebase/firestore";
 
 export default function BuyTicket({ route }) {
-  const { Pid } = route.params;
+  const { myData } = route.params;
   const DatCollectinRef = collection(db, "Package");
   const [travelPackage, setTravelPackage] = useState("");
+  const [wallet, setWallet] = useState("");
   const navigation = useNavigation();
+  const [ignored, forceUpdate] = React.useReducer((x) => x + 1, 0);
 
   useEffect(() => {
-    //fetch the all data from firebase and set it to usestate, this firebase method
     const getAllData = async () => {
       const data = await getDocs(DatCollectinRef);
       setTravelPackage(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+      const docRef = await getDoc(doc(db, "RegisteredUser", myData.uid));
+      setWallet({ ...docRef.data(), id: docRef.id });
+      forceUpdate();
     };
-
     getAllData();
-  }, []);
+  }, [ignored]);
   // console.log(travelPackage);
 
   const GetConfirmation = (item) => {
-    Alert.alert(
-      item.package_name,
-      "Package Price is " +
-        item.price +
-        " and it's Valid for " +
-        item.valid +
-        " Days, You want to buy this package please click 'Buy' button",
-      [
-        {
-          text: "Cancel",
-          onPress: () => console.log("Cancel Pressed"),
-          style: "cancel",
-        },
-        {
-          text: "Buy",
-          onPress: () => navigation.navigate("QR Code Ticket", { item, Pid }),
-        },
-      ]
-    );
+    let w = wallet.wallet;
+    let p = item.price;
+    if (w < p) {
+      Alert.alert(
+        "insufficient balance",
+        "You cannot afford to purchase this package hence you must top up your account",
+        [
+          {
+            text: "Cancel",
+            onPress: () => console.log("Cancel Pressed"),
+            style: "cancel",
+          },
+          {
+            text: "Top Up",
+            onPress: () => navigation.navigate("Top Up"),
+          },
+        ]
+      );
+    } else
+      Alert.alert(
+        item.package_name,
+        "Package Price is " +
+          item.price +
+          " and it's Valid for " +
+          item.valid +
+          " Days, You want to buy this package please click 'Buy' button",
+        [
+          {
+            text: "Cancel",
+            // onPress: () => console.log("Cancel Pressed"),
+            style: "cancel",
+          },
+          {
+            text: "Buy",
+            onPress: () =>
+              navigation.navigate("QR Code Ticket", { item, myData }),
+          },
+        ]
+      );
+    forceUpdate();
   };
 
   return (

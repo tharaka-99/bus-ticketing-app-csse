@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useRef } from "react";
+import React, { useState, useCallback, useMemo, useRef } from "react";
 import {
   View,
   Text,
@@ -8,24 +8,13 @@ import {
 } from "react-native";
 import QECode from "react-native-qrcode-svg";
 import { db } from "../../Firebase/Firebase-config";
-import { collection, addDoc, updateDoc, doc, getDoc } from "firebase/firestore";
+import { collection, addDoc, updateDoc, doc } from "firebase/firestore";
 import { useNavigation } from "@react-navigation/native";
 
-export default function TicketQRCode({ route }) {
-  const { item, myData } = route.params;
-  const Pid = myData.uid;
-  const [user, setUser] = useState("");
-  const navigation = useNavigation();
-  const [ignored, forceUpdate] = React.useReducer((x) => x + 1, 0);
+export default function PassengerQRCode({ route }) {
+  const { item } = route.params;
 
-  useEffect(() => {
-    const getAllData = async () => {
-      const docRef = await getDoc(doc(db, "RegisteredUser", myData.uid));
-      setUser({ ...docRef.data(), id: docRef.id });
-      forceUpdate();
-    };
-    getAllData();
-  }, [ignored]);
+  const navigation = useNavigation();
 
   const [productQRref, setProductQRref] = useState();
   const days = item.valid;
@@ -48,33 +37,6 @@ export default function TicketQRCode({ route }) {
     return date + "/" + month + "/" + year; //format: d-m-y;
   };
 
-  const savePayment = async (item) => {
-    try {
-      await addDoc(collection(db, "purchased_packages"), {
-        passenger_Id: Pid,
-        package_Id: item.id,
-        package_name: item.package_name,
-        package_type: item.package_type,
-        price: item.price,
-        valid: item.valid,
-        purchased: getCurrentDate(),
-        expired: expiredDate(),
-      });
-      if (addDoc) {
-        await updateDoc(doc(db, "RegisteredUser", Pid), {
-          wallet: user.wallet - item.price,
-        });
-        ToastAndroid.show(
-          "Your " + item.package_name + " has been activated",
-          ToastAndroid.SHORT
-        );
-        navigation.navigate("Passanger", { myData });
-      }
-    } catch (e) {
-      console.error("Error adding document: ", e);
-    }
-  };
-
   return (
     <View
       style={{
@@ -93,9 +55,9 @@ export default function TicketQRCode({ route }) {
           elevation: 10,
         }}
       >
-        {/* <QECode
+        <QECode
           value={JSON.stringify({
-            passenger_Id: Pid,
+            passenger_Id: item.passenger_Id,
             package_Id: item.uid,
             package_name: item.package_name,
             package_type: item.package_type,
@@ -106,12 +68,13 @@ export default function TicketQRCode({ route }) {
           })}
           getRef={(c) => setProductQRref(c)}
           size={200}
-        /> */}
+        />
         <Text
           style={{
             fontSize: 23,
             fontWeight: "bold",
             textDecorationLine: "underline",
+            marginTop: 30,
           }}
         >
           Package Details
@@ -128,21 +91,6 @@ export default function TicketQRCode({ route }) {
           Expired date: {expiredDate()}
         </Text>
       </View>
-      <TouchableOpacity
-        style={{
-          backgroundColor: "#FFB200",
-          borderRadius: 5,
-          borderWidth: 1.5,
-          padding: 10,
-          borderColor: "black",
-          marginTop: 30,
-        }}
-        onPress={() => savePayment(item)}
-      >
-        <Text style={{ fontSize: 20, fontWeight: "bold" }}>
-          Package perchced
-        </Text>
-      </TouchableOpacity>
     </View>
   );
 }
