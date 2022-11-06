@@ -21,6 +21,7 @@ import {
 export default function PassengerHome({ route }) {
   const { myData } = route.params;
   const Pid = myData.uid;
+  // console.log(user);
   const navigation = useNavigation();
   const [user, setUser] = useState(myData);
   const [ignored, forceUpdate] = React.useReducer((x) => x + 1, 0);
@@ -49,7 +50,14 @@ export default function PassengerHome({ route }) {
           }}
         >
           <Text style={{ fontSize: 20 }}>Cradit Balence:</Text>
-          <View style={{ flexDirection: "row", alignItems: "center" }}>
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              borderColor: "#000000",
+              borderWidth: 1.5,
+            }}
+          >
             <Text
               style={{
                 marginTop: 5,
@@ -84,7 +92,7 @@ export default function PassengerHome({ route }) {
                 justifyContent: "center",
               }}
               activeOpacity={2}
-              onPress={() => navigation.navigate("Top Up")}
+              onPress={() => navigation.navigate("Top Up", { myData })}
               underlayColor="#0084fffa"
             >
               <Text

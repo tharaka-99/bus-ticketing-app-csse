@@ -53,7 +53,7 @@ export default function BuyTicket({ route }) {
           },
           {
             text: "Top Up",
-            onPress: () => navigation.navigate("Top Up"),
+            onPress: () => navigation.navigate("Top Up", { myData }),
           },
         ]
       );

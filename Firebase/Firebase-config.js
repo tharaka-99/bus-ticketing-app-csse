@@ -4,13 +4,13 @@ import "firebase/compat/auth";
 import "firebase/compat/firestore";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyA-epGVgaQ-0gdki_uB-Dbm-qkc2pcqNo4",
-  authDomain: "uee-job-finder-project.firebaseapp.com",
-  projectId: "uee-job-finder-project",
-  storageBucket: "uee-job-finder-project.appspot.com",
-  messagingSenderId: "122421237502",
-  appId: "1:122421237502:web:0da7833527355e4e46b7af",
-  measurementId: "G-FG1JW11Z0X",
+  apiKey: "AIzaSyDvrzaBjC5yIVHLEqe81O-7JeQwQEJjOz8",
+  authDomain: "react-native-crud-8d9fc.firebaseapp.com",
+  projectId: "react-native-crud-8d9fc",
+  storageBucket: "react-native-crud-8d9fc.appspot.com",
+  messagingSenderId: "651893596469",
+  appId: "1:651893596469:web:5fd42fc854888ccb06ac7c",
+  measurementId: "G-DMNVMT54LC",
 };
 
 // Initialize Firebase

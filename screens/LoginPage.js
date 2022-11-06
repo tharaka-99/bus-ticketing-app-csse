@@ -5,12 +5,14 @@ import {
   TextInput,
   TouchableOpacity,
   ToastAndroid,
+  Image,
+  Keyboard,
+  ScrollView,
 } from "react-native";
 import React, { useState, useEffect, useRef } from "react";
 import PhoneInput from "react-native-phone-number-input";
 import {
   getAuth,
-  signInWithEmailAndPassword,
   PhoneAuthProvider,
   signInWithCredential,
 } from "firebase/auth";
@@ -22,21 +24,21 @@ import {
   FirebaseRecaptchaVerifierModal,
   FirebaseRecaptchaBanner,
 } from "expo-firebase-recaptcha";
+import Input from "./CustomComponent/Input";
 
 export default function LoginPage() {
-  const [email, setEmail] = useState();
-  const [Password, setPassword] = useState();
+  const [user, setUser] = useState({
+    name: "",
+  });
+  const [errors, setErrors] = React.useState({});
   const navigation = useNavigation();
   const phoneInput = useRef();
-
   const [phoneNumber, setPhoneNumber] = useState("");
-  const [code, setCode] = useState("");
   const [value, setValue] = useState("");
   const recaptchaVerifier = useRef("");
   const [verificationId, setVerificationId] = useState("");
   const [verificationCode, setVerificationCode] = React.useState();
   const attemptInvisibleVerification = false;
-  const [message, showMessage] = React.useState();
   const [flag, setFlag] = useState(false);
 
   useEffect(() => {
@@ -48,43 +50,13 @@ export default function LoginPage() {
           const docRef = await getDoc(doc(db, "RegisteredUser", id));
           const myData = docRef.data();
           navigation.navigate("Passanger", { myData });
-
-          // if (docRef.exists()) {
-          //   const myData = docRef.data();
-
-          //   console.log("Document data:", docRef.data().worker_name);
-          //   const worker_data = docRef.data();
-          //   // console.log("Document data:", myData.role); navigation.navigate("Peon Home", { worker_data });
-          //   if (myData.role === "admin") {
-          //     console.log("ok");
-          //     navigation.navigate("Admin Home");
-          //   }
-
-          // } else {
-          //   // doc.data() will be undefined in this case
-          //   console.log("No such document!");
-          // }
+          setFlag(false);
         };
         getDate(user.uid);
       }
     });
     return subscribe;
   });
-
-  const signin = async () => {
-    const auth = getAuth();
-    await signInWithEmailAndPassword(auth, email, Password)
-      .then((userCredential) => {
-        // Signed in
-        const user = userCredential.user;
-        // return { user };
-      })
-      .catch((error) => {
-        // const errorCode = error.code;
-        const errorMessage = error.message;
-        alert(errorMessage);
-      });
-  };
 
   const sendVerification = async () => {
     const auth = getAuth();
@@ -99,12 +71,8 @@ export default function LoginPage() {
         "Verification code has been sent to your phone.",
         ToastAndroid.SHORT
       );
-      // showMessage({
-      //   text: "Verification code has been sent to your phone.",
-      // });
       setFlag(true);
     } catch (err) {
-      // showMessage({ text: `Error: ${err.message}`, color: "red" });
       ToastAndroid.show(`Error: ${err.message}`, ToastAndroid.SHORT);
     }
   };
@@ -120,166 +88,137 @@ export default function LoginPage() {
         setDoc(doc(db, "RegisteredUser", auth.currentUser.uid), {
           uid: auth.currentUser.uid,
           phone_number: auth.currentUser.phoneNumber,
+          name: user.name,
+          wallet: user.wallet,
         });
       });
-      // showMessage({ text: "Phone authentication successful 👍" });
       ToastAndroid.show(
         "Phone authentication successful 👍",
         ToastAndroid.SHORT
       );
     } catch (err) {
-      // showMessage({ text: `Error: ${err.message}`, color: "red" });
       ToastAndroid.show(`Error: ${err.message}`, ToastAndroid.SHORT);
     }
   };
 
+  const validate = async () => {
+    Keyboard.dismiss();
+    let isValid = true;
+    if (!user.name) {
+      handleError("Please input Name", "name");
+      isValid = false;
+    }
+    if (isValid) {
+      sendVerification();
+    }
+  };
+
+  const handleChangeText = (user, value) => {
+    setUser((prevState) => ({ ...prevState, [user]: value }));
+  };
+
+  const handleError = (error, user) => {
+    setErrors((prevState) => ({ ...prevState, [user]: error }));
+  };
+
   return (
-    <View style={styles.main_container}>
-      <View style={{ marginBottom: 50 }}>
-        <Text style={styles.header_text}>Welcome to JobSpot</Text>
-        <Text style={{ color: "#130160", textAlign: "center" }}>
-          Login to Continoue
-        </Text>
-      </View>
-      <View>
-        <Text style={styles.input_lable}>Email</Text>
-        <TextInput
-          style={styles.input_text}
-          keyboardType="email-address"
-          placeholder="Enter email"
-          onChangeText={(text) => setEmail(text)}
-        ></TextInput>
-        <Text style={styles.input_lable}>Password</Text>
-        <TextInput
-          style={styles.input_text}
-          secureTextEntry={true}
-          placeholder="Enter password"
-          onChangeText={(text) => setPassword(text)}
-        ></TextInput>
-
-        <FirebaseRecaptchaVerifierModal
-          ref={recaptchaVerifier}
-          firebaseConfig={getApp().options}
-          // attemptInvisibleVerification="true"
-        />
-
-        <View style={{ display: !flag ? "flex" : "none" }}>
-          <PhoneInput
-            ref={phoneInput}
-            defaultValue={value}
-            defaultCode="LK"
-            layout="first"
-            // onChangeText={(text) => {
-            //   setValue(text);
-            // }}
-            // onChangeFormattedText={(text) => {
-            //   setFormattedValue(text);
-            // }}
-            // withDarkTheme
-            // withShadow
-            onChangeFormattedText={(text) => {
-              setPhoneNumber(text);
+    <ScrollView style={{}}>
+      <View style={styles.main_container}>
+        <View style={{ marginBottom: 30, alignItems: "center" }}>
+          <Image
+            style={{
+              alignItems: "center",
+              justifyContent: "center",
+              width: 150,
+              height: 150,
             }}
-            autoFocus
+            source={require("../assets/Bus_app_Logo.png")}
           />
-          <TouchableOpacity onPress={sendVerification}>
-            <Text>Send Verification</Text>
-          </TouchableOpacity>
+          <Text style={styles.header_text}>Welcome to BusApp</Text>
         </View>
-
-        {/* Verification Code Input */}
-
-        <View style={{ display: flag ? "flex" : "none" }}>
-          <TextInput
-            placeholder="Confirmation Code"
-            onChangeText={setVerificationCode}
-            keyboardType="number-pad"
+        <View>
+          <FirebaseRecaptchaVerifierModal
+            ref={recaptchaVerifier}
+            firebaseConfig={getApp().options}
           />
-          <TouchableOpacity onPress={confirmCode}>
-            <Text>Send Verification</Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* {message ? (
-          <TouchableOpacity
-            style={[
-              StyleSheet.absoluteFill,
-              { backgroundColor: 0xffffffee, justifyContent: "center" },
-            ]}
-            onPress={() => showMessage(undefined)}
-          >
-            <Text
-              style={{
-                color: message.color || "blue",
-                fontSize: 17,
-                textAlign: "center",
-                margin: 20,
-              }}
-            >
-              {message.text}
-            </Text>
-          </TouchableOpacity>
-        ) : undefined} */}
-        {attemptInvisibleVerification && <FirebaseRecaptchaBanner />}
-
-        <TouchableOpacity
-          style={{
-            alignContent: "center",
-            marginTop: 35,
-            backgroundColor: "#0D47A1",
-            height: 45,
-            justifyContent: "center",
-            alignItems: "center",
-            borderRadius: 7,
-          }}
-          onPress={() => signin()}
-          underlayColor="#0084fffa"
-        >
-          <Text style={{ fontSize: 20, fontWeight: "bold", color: "#fff" }}>
-            Login
-          </Text>
-        </TouchableOpacity>
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "center",
-            marginTop: 30,
-          }}
-        >
           <Text
             style={{
-              color: "#130160",
-              fontSize: 15,
-              textAlign: "center",
-              marginRight: 7,
+              display: !flag ? "flex" : "none",
+              color: "#0D0140",
+              marginVertical: 5,
+              fontWeight: "bold",
+              fontSize: 16,
             }}
           >
-            You don't have an account yet?
+            Phone number
           </Text>
-          <TouchableOpacity onPress={() => navigation.navigate("Sign Up")}>
-            <Text
-              style={{
-                fontWeight: "bold",
-                opacity: 0.6,
-                fontSize: 15,
-                color: "#1565C0",
+          <View
+            style={{
+              display: !flag ? "flex" : "none",
+              borderColor: "#67afff",
+              borderWidth: 1.5,
+              borderRadius: 10,
+              paddingLeft: 10,
+            }}
+          >
+            <PhoneInput
+              ref={phoneInput}
+              defaultValue={value}
+              defaultCode="LK"
+              layout="first"
+              onChangeFormattedText={(text) => {
+                setPhoneNumber(text);
               }}
-            >
-              Sign Up
-            </Text>
-          </TouchableOpacity>
+              autoFocus
+            />
+          </View>
+          <View
+            style={{
+              display: !flag ? "flex" : "none",
+            }}
+          >
+            <Text style={styles.input_lable}>Passanger name</Text>
+            <Input
+              // style={styles.input_text}
+              placeholder="Enter passanger name"
+              onChangeText={(text) => handleChangeText("name", text)}
+              onFocus={() => handleError(null, "name")}
+              error={errors.name}
+            ></Input>
+          </View>
+          <View style={{ display: !flag ? "flex" : "none" }}>
+            <TouchableOpacity style={styles.button} onPress={validate}>
+              <Text style={{ fontSize: 17, fontWeight: "bold" }}>
+                Send verification
+              </Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* Verification Code Input */}
+
+          <View style={{ display: flag ? "flex" : "none" }}>
+            <TextInput
+              style={styles.input_text}
+              placeholder="Confirmation Code"
+              onChangeText={setVerificationCode}
+              keyboardType="number-pad"
+            />
+            <TouchableOpacity style={styles.button} onPress={confirmCode}>
+              <Text style={{ fontSize: 17, fontWeight: "bold" }}>
+                Code verified
+              </Text>
+            </TouchableOpacity>
+          </View>
+
+          {attemptInvisibleVerification && <FirebaseRecaptchaBanner />}
         </View>
       </View>
-    </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  main_container: {
-    flex: 1,
-    top: 50,
-    margin: 15,
-  },
+  main_container: { padding: 20 },
   header_text: {
     fontSize: 25,
     fontWeight: "700",
@@ -287,6 +226,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   input_text: {
+    fontSize: 15,
     borderColor: "#67afff",
     borderWidth: 1.5,
     borderRadius: 10,
@@ -299,5 +239,16 @@ const styles = StyleSheet.create({
     marginVertical: 5,
     fontWeight: "bold",
     fontSize: 16,
+  },
+  button: {
+    alignContent: "center",
+    borderWidth: 2,
+    borderColor: "#000000",
+    marginTop: 20,
+    backgroundColor: "#FFB200",
+    padding: 10,
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 7,
   },
 });
