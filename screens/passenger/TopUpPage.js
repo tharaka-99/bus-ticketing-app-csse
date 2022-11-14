@@ -20,8 +20,10 @@ import { useNavigation } from "@react-navigation/native";
 
 export default function TopUpPage({ route }) {
   const { myData } = route.params;
+  console.log(myData);
   const navigation = useNavigation();
   const [payment, setPayment] = useState();
+  
   const pay = async () => {
     try {
       await addDoc(collection(db, "payment"), {

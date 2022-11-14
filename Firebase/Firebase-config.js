@@ -4,13 +4,13 @@ import "firebase/compat/auth";
 import "firebase/compat/firestore";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDvrzaBjC5yIVHLEqe81O-7JeQwQEJjOz8",
-  authDomain: "react-native-crud-8d9fc.firebaseapp.com",
-  projectId: "react-native-crud-8d9fc",
-  storageBucket: "react-native-crud-8d9fc.appspot.com",
-  messagingSenderId: "651893596469",
-  appId: "1:651893596469:web:5fd42fc854888ccb06ac7c",
-  measurementId: "G-DMNVMT54LC",
+  apiKey: "AIzaSyADZV8n3tsUmJ5fihy20cwuhGspIwgmYtI",
+  authDomain: "csse-bus-ticketing-a0cb8.firebaseapp.com",
+  projectId: "csse-bus-ticketing-a0cb8",
+  storageBucket: "csse-bus-ticketing-a0cb8.appspot.com",
+  messagingSenderId: "1041577967116",
+  appId: "1:1041577967116:web:79cda2ccd748b1f5907829",
+  measurementId: "G-RVH7P609KP",
 };
 
 // Initialize Firebase

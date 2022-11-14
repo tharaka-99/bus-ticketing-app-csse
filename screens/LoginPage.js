@@ -89,7 +89,7 @@ export default function LoginPage() {
           uid: auth.currentUser.uid,
           phone_number: auth.currentUser.phoneNumber,
           name: user.name,
-          wallet: user.wallet,
+          wallet: "",
         });
       });
       ToastAndroid.show(

@@ -17,11 +17,11 @@ import {
   deleteDoc,
   doc,
 } from "firebase/firestore";
+import { getAuth, deleteUser } from "firebase/auth";
 
 export default function PassengerHome({ route }) {
   const { myData } = route.params;
   const Pid = myData.uid;
-  // console.log(user);
   const navigation = useNavigation();
   const [user, setUser] = useState(myData);
   const [ignored, forceUpdate] = React.useReducer((x) => x + 1, 0);
@@ -35,12 +35,49 @@ export default function PassengerHome({ route }) {
     getUser();
   }, [ignored]);
 
+  const deleteAccount = () => {
+    const auth = getAuth();
+    const user = auth.currentUser;
+    console.log(user);
+    deleteUser(auth.currentUser)
+      .then(() => {
+        console.log("deleted");
+      })
+      .catch((error) => {
+        // An error ocurred
+        // ...
+      });
+  };
+
   return (
     <View>
       <View style={{ margin: 10 }}>
         <Text style={{ fontSize: 20, fontWeight: "bold", margin: 15 }}>
-          Hi Tharaka Dilshan
+          Hi {myData.name}
         </Text>
+        <TouchableOpacity
+          style={{
+            flexDirection: "row",
+            backgroundColor: "#fff",
+            borderRadius: 5,
+            width: 100,
+            justifyContent: "center",
+          }}
+          activeOpacity={2}
+          onPress={deleteAccount}
+          underlayColor="#0084fffa"
+        >
+          <Text
+            style={{
+              fontSize: 20,
+              color: "#ef6325",
+              margin: 5,
+              fontWeight: "600",
+            }}
+          >
+            Top Up
+          </Text>
+        </TouchableOpacity>
         <View
           style={{
             backgroundColor: "#FFB200",
@@ -55,7 +92,6 @@ export default function PassengerHome({ route }) {
               flexDirection: "row",
               alignItems: "center",
               borderColor: "#000000",
-              borderWidth: 1.5,
             }}
           >
             <Text
